@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog Upload</title>
+    <link rel="stylesheet" href="../css/upload.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+</head>
+<body>
+    <!-- <form onsubmit="addBlog(event)">
+        <label for="poster">
+            <img src="../images/hero-bg.jpg" alt="" id="blogimg" height="250px" width="180px">
+            <input onchange="imagechange(event)" type="file" id="bimage" name="bimage" style="display: none;"  >
+        </label><br>
+
+        <div>
+        <label for="">Title:</label><input type="text" id="Title" name="Title"><br>
+       </div>
+       <div>
+        <label for="">Content:</label>
+        <textarea name="content" id="content"></textarea>
+      </div>
+        <button>Publish</button>
+    </form> -->
+
+
+
+    <div class="container">
+        <div class="row">
+          <div class="col-md-12">
+            <form onsubmit="addBlog(event)">
+                <div class="image">
+                    <label for="bimage">
+                        <img src="../images/B.jpg" alt="" id="blogimg" height="250px" width="180px">
+                        <input onchange="imagechange(event)" type="file" id="bimage" name="bimage" style="display: none;"  >
+                    </label><br>
+                  </div>
+              <div class="form-group">
+                <input type="text" class="form-control" name="Title" id="Title" placeholder="Title"/>
+              </div>
+              <div class="form-group">
+                <textarea class="form-control bcontent" name="content" id="content" placeholder="Content"></textarea>
+              </div>
+              <div class="form-submit">
+                 <input type="submit" name="submit" id="submit" value="Publish" class="btn btn-primary form-control" />
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <script>
+          let blogimg = document.getElementById("blogimg");
+        function imagechange(event) {
+            let file = event.target.files[0];
+            convert(file)
+                .then(base64 => {
+                    blogimg.src = base64;
+                })
+        }
+
+        function convert(file) {
+            return new Promise((res, rej) => {
+                let fileReader = new FileReader();
+                fileReader.readAsDataURL(file);
+                fileReader.onload = () => {
+                    res(fileReader.result);
+                }
+                fileReader.onerror = (error) => {
+                    rej(error);
+                }
+            })
+        }
+
+        function addBlog(event){
+            event.preventDefault();
+            let data = new FormData(event.target);
+            let file = event.target[0].files[0];
+            convert(file)
+                .then(base64img => {
+                    data.delete("blogimg");
+                    data.append("blogimg", base64img);
+                    fetch(`http://localhost:3000/api/add-Blog`, {
+                        method: "post",
+                        body: data
+                    })
+                        .then(res => {
+                            if (res.status == 200) {
+                                return res.text();
+                            }
+                            if (res.status == 400) {
+                                return res.text();
+                            }
+
+                        })
+                        .then(data => {
+                            if (data) {
+                                alert(data);
+                            }
+                        })
+                })
+                .catch(error => {
+                    console.log(error);
+                })
+        }
+      </script>
+
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+</body>
+</html>
